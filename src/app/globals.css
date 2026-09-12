@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #fff6e9;
+  --color-paper: #fffdf8;
+  --color-ink: #2a1f1a;
+  --color-ink-soft: #6b5d53;
+  --color-line: #ecdcc6;
+  --color-tomato: #e8502f;
+  --color-tomato-dark: #b83d22;
+  --color-sun: #ffc247;
+  --color-leaf: #23794f;
+  --color-sky: #3b8fd0;
+  --color-plum: #6b43c4;
+  --color-blush: #ffdccb;
+  --color-mint: #d3f0df;
+  --color-lilac: #e6dcfb;
+  --color-butter: #fff0c2;
+  --color-ice: #d9ecfb;
+}
+
+@theme inline {
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-tomato px-5 py-2.5 font-bold text-white shadow-[0_4px_0_0_var(--color-tomato-dark)] transition hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none disabled:pointer-events-none disabled:opacity-60;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-paper px-5 py-2.5 font-bold text-ink shadow-[0_4px_0_0_var(--color-ink)] transition hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none disabled:pointer-events-none disabled:opacity-60;
+  }
+  .card {
+    @apply rounded-3xl border border-line bg-paper shadow-[0_3px_0_0_var(--color-line)];
+  }
+  .field {
+    @apply w-full rounded-2xl border-2 border-line bg-white px-4 py-3 text-base text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-tomato focus:ring-4 focus:ring-tomato/15;
+  }
+  .field-label {
+    @apply mb-1.5 block text-sm font-bold text-ink;
+  }
+  .field-error {
+    @apply mt-1.5 text-sm font-semibold text-tomato-dark;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+}
+
+@utility bg-map-grid {
+  background-image:
+    linear-gradient(to right, rgb(42 31 26 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(42 31 26 / 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}

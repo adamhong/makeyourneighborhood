@@ -1,0 +1,64 @@
+// Make Your Neighborhood — data model
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Proposal {
+  id                  Int      @id @default(autoincrement())
+  title               String
+  description         String
+  address             String
+  neighborhood        String
+  category            String
+  latitude            Float?
+  longitude           Float?
+  existingImageUrl    String?
+  inspirationImageUrl String?
+  /// JSON-encoded array of community-need ids (see src/lib/needs.ts)
+  needs               String   @default("[]")
+  /// No accounts in v1: support is a simple counter
+  supportCount        Int      @default(0)
+  createdAt           DateTime @default(now())
+
+  comments    Comment[]
+  investments InvestmentInterest[]
+
+  @@index([neighborhood])
+  @@index([category])
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  proposalId Int
+  authorName String
+  email      String?
+  body       String
+  createdAt  DateTime @default(now())
+
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@index([proposalId])
+}
+
+/// Non-binding expression of interest. Not an investment offer.
+model InvestmentInterest {
+  id         Int      @id @default(autoincrement())
+  proposalId Int
+  name       String
+  email      String?
+  /// Whole US dollars; optional
+  amount     Int?
+  note       String?
+  createdAt  DateTime @default(now())
+
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@index([proposalId])
+}
