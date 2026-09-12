@@ -1,6 +1,9 @@
 /** Supporters needed before a proposal shows the "Community momentum" banner. */
 export const MOMENTUM_THRESHOLD = 50;
 
+/** Demo only: newly submitted proposals start with a few "I want this" votes. */
+export const STARTER_SUPPORT = { min: 3, max: 12 };
+
 export const INVESTMENT_DISCLAIMER =
   "Interest is non-binding and does not constitute an investment offer.";
 

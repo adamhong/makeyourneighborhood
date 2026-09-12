@@ -7,6 +7,19 @@ import { NEIGHBORHOODS } from "@/lib/constants";
 import { compactUsd } from "@/lib/format";
 import { getCommunityStats, getPopularProposals } from "@/lib/proposals";
 
+// Curated hero pair: what a vacant space looks like today vs. the kind of
+// neighborhood third space this project is about.
+const HERO_IMAGES = {
+  before: {
+    src: "https://images.unsplash.com/photo-1775146561176-54de24cc3179?auto=format&fit=crop&w=800&q=80",
+    alt: "A vacant brick storefront with boarded-up windows",
+  },
+  after: {
+    src: "https://images.unsplash.com/photo-1759960034444-99fc2da398bc?auto=format&fit=crop&w=1200&q=80",
+    alt: "Neighbors gathered at tables in a sunny, plant-filled café",
+  },
+};
+
 const STEPS = [
   { emoji: "📍", title: "Spot a space", body: "A shuttered storefront, an empty lot, a parking yard nobody uses. Drop a pin." },
   { emoji: "✨", title: "Share the vision", body: "Show what's there today and what it could become — childcare, a stage, a park." },
@@ -15,7 +28,6 @@ const STEPS = [
 
 export default async function HomePage() {
   const [popular, stats] = await Promise.all([getPopularProposals(3), getCommunityStats()]);
-  const [featured, runnerUp] = popular;
 
   return (
     <>
@@ -30,7 +42,7 @@ export default async function HomePage() {
               <PinIcon className="h-3.5 w-3.5 text-tomato" /> San Francisco · community ideas
             </p>
             <h1 className="mt-5 font-display text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-              Make Your <span className="text-tomato">Neighborhood</span>
+              Make My <span className="text-tomato">Neighborhood</span>
             </h1>
             <p className="mt-6 max-w-md text-xl font-medium text-ink">
               Turn local ideas into momentum for better neighborhood spaces.
@@ -48,37 +60,31 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {featured && (
-            <div className="relative mx-auto w-full max-w-md md:max-w-none">
-              <div className="rotate-2 overflow-hidden rounded-[2rem] border-4 border-paper shadow-xl">
-                <ProposalImage
-                  src={featured.inspirationImageUrl ?? featured.existingImageUrl}
-                  alt={`Inspiration for ${featured.title}`}
-                  className="aspect-[4/5] w-full object-cover md:aspect-[5/5]"
-                />
-              </div>
-              {runnerUp && (
-                <div className="absolute -bottom-8 -left-4 w-36 -rotate-6 overflow-hidden rounded-2xl border-4 border-paper shadow-lg sm:w-44">
-                  <ProposalImage src={runnerUp.existingImageUrl} alt={`The space today: ${runnerUp.title}`} className="aspect-square w-full object-cover" />
-                  <span className="chip absolute bottom-2 left-2 bg-ink/85 text-cream">Today</span>
-                </div>
-              )}
-              <div className="absolute -right-2 top-6 rotate-3 rounded-2xl bg-paper px-4 py-3 shadow-lg">
-                <p className="flex items-center gap-1.5 font-display text-2xl font-extrabold">
-                  <HeartIcon filled className="h-5 w-5 text-tomato" />
-                  {featured.supportCount}
-                </p>
-                <p className="text-xs font-bold text-ink-soft">neighbors want this</p>
-              </div>
-              <Link
-                href={`/ideas/${featured.id}`}
-                className="absolute bottom-6 right-4 max-w-[62%] rounded-2xl bg-ink/90 px-4 py-3 text-cream backdrop-blur transition hover:bg-ink"
-              >
-                <p className="text-xs font-bold uppercase tracking-wider text-sun">{featured.neighborhood}</p>
-                <p className="font-display font-bold leading-tight">{featured.title}</p>
-              </Link>
+          <div className="relative mx-auto w-full max-w-md md:max-w-none">
+            <div className="relative rotate-2 overflow-hidden rounded-[2rem] border-4 border-paper shadow-xl">
+              <ProposalImage
+                src={HERO_IMAGES.after.src}
+                alt={HERO_IMAGES.after.alt}
+                className="aspect-[4/5] w-full object-cover md:aspect-square"
+              />
+              <span className="chip absolute left-4 top-4 bg-sun text-ink shadow-sm">✨ After</span>
             </div>
-          )}
+            <div className="absolute -bottom-8 -left-4 w-36 -rotate-6 overflow-hidden rounded-2xl border-4 border-paper shadow-lg sm:w-44">
+              <ProposalImage src={HERO_IMAGES.before.src} alt={HERO_IMAGES.before.alt} className="aspect-square w-full object-cover" />
+              <span className="chip absolute bottom-2 left-2 bg-ink/85 text-cream">Before</span>
+            </div>
+            <div className="absolute -right-2 top-6 rotate-3 rounded-2xl bg-paper px-4 py-3 shadow-lg">
+              <p className="flex items-center gap-1.5 font-display text-2xl font-extrabold">
+                <HeartIcon filled className="h-5 w-5 text-tomato" />
+                {stats.supporters}
+              </p>
+              <p className="text-xs font-bold text-ink-soft">neighbor votes and counting</p>
+            </div>
+            <div className="absolute bottom-6 right-4 max-w-[58%] rounded-2xl bg-ink/90 px-4 py-3 text-cream backdrop-blur">
+              <p className="text-xs font-bold uppercase tracking-wider text-sun">From vacant to vibrant</p>
+              <p className="font-display font-bold leading-tight">Empty storefront → neighborhood third space</p>
+            </div>
+          </div>
         </div>
       </section>
 

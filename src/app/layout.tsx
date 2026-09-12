@@ -16,8 +16,8 @@ const body = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Make Your Neighborhood",
-    template: "%s · Make Your Neighborhood",
+    default: "Make My Neighborhood",
+    template: "%s · Make My Neighborhood",
   },
   description: "Turn local ideas into momentum for better neighborhood spaces.",
 };

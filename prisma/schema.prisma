@@ -1,4 +1,4 @@
-// Make Your Neighborhood — data model
+// Make My Neighborhood — data model
 // Docs: https://pris.ly/d/prisma-schema
 
 generator client {

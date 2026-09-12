@@ -8,7 +8,7 @@ export function SiteHeader() {
         <Link href="/" className="flex items-center gap-2">
           <LogoMark />
           <span className="font-display text-base font-extrabold leading-[1.05] tracking-tight sm:text-lg">
-            Make Your
+            Make My
             <br className="sm:hidden" /> Neighborhood
           </span>
         </Link>

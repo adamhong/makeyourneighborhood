@@ -9,7 +9,7 @@ export function SiteFooter() {
         <div className="flex items-center gap-3">
           <LogoMark className="h-8 w-8" />
           <div>
-            <p className="font-display font-extrabold">Make Your Neighborhood</p>
+            <p className="font-display font-extrabold">Make My Neighborhood</p>
             <p className="text-sm text-ink-soft">A hackathon prototype for San Francisco neighbors.</p>
           </div>
         </div>

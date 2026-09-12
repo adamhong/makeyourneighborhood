@@ -1,4 +1,4 @@
-# Make Your Neighborhood
+# Make My Neighborhood
 
 A hackathon prototype where San Francisco residents propose ideas for vacant or underused spaces, browse proposals, comment, signal support, and share non-binding interest in investing.
 
@@ -67,9 +67,23 @@ src/
   generated/prisma/      Generated client (git-ignored)
 ```
 
+## Deploying (Railway)
+
+`railway.json` configures the service: it builds with `npm run build`, starts with `npm start`, and health-checks `/`.
+
+`npm start` runs `npm run db:deploy` first: it applies migrations and seeds demo data only if the database is empty, then starts Next.js. Redeploys never wipe existing data. Migrations run at start (not as a pre-deploy command) because Railway doesn't mount volumes during pre-deploy.
+
+SQLite lives on the container's disk, which Railway resets on every deploy. To keep submissions:
+
+1. Add a **Volume** to the service, mounted at `/data`.
+2. Set the variable `DATABASE_URL=file:/data/dev.db`. The path must match the volume's mount path.
+
+Without a volume the app still works, but it goes back to the demo data after each deploy.
+
 ## Notes and next steps
 
 - Uploaded photos are saved to `public/uploads/`, which only works for local dev. Swap `src/lib/uploads.ts` for object storage before deploying.
 - The map, voice dictation, and "AI" neighborhood insights are placeholders. The data they use lives in `src/lib/constants.ts` so real maps, vacancy data, and AI analysis can plug in later.
+- New proposals start with 3–12 demo "I want this" votes so they don't look empty (`STARTER_SUPPORT` in `src/lib/constants.ts`). Set both values to 0 to turn this off.
 - Support is an anonymous counter, and all server actions are public. Add authentication and rate limiting before real use.
 - Investment interest is non-binding and does not constitute an investment offer.

@@ -165,6 +165,12 @@ const proposals: SeedProposal[] = [
 ];
 
 async function main() {
+  // `--if-empty` (used on deploy) never touches a database that already has data.
+  if (process.argv.includes("--if-empty") && (await prisma.proposal.count()) > 0) {
+    console.log("Database already has proposals; skipping seed.");
+    return;
+  }
+
   await prisma.investmentInterest.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.proposal.deleteMany();
