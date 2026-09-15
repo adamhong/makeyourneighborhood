@@ -130,12 +130,23 @@ export default async function HomePage() {
             See all ideas <ArrowRightIcon />
           </Link>
         </div>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {popular.map((proposal) => (
-            <ProposalCard key={proposal.id} proposal={proposal} />
-          ))}
-        </div>
-        <InvestmentDisclaimer className="mt-5" />
+        {popular.length > 0 ? (
+          <>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {popular.map((proposal) => (
+                <ProposalCard key={proposal.id} proposal={proposal} />
+              ))}
+            </div>
+            <InvestmentDisclaimer className="mt-5" />
+          </>
+        ) : (
+          <div className="card mt-8 flex flex-col items-center gap-3 px-6 py-14 text-center">
+            <span className="text-5xl" aria-hidden>🌱</span>
+            <h3 className="font-display text-2xl font-bold">No ideas yet</h3>
+            <p className="max-w-sm text-ink-soft">Be the first to imagine something better for your corner of the city.</p>
+            <Link href="/submit" className="btn-primary mt-2">Submit an idea</Link>
+          </div>
+        )}
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6">

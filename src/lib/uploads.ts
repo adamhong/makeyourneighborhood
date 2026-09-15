@@ -1,10 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
-// Local-dev storage: files land in public/uploads and are served statically.
-// Swap this module for object storage (S3, R2, ...) when deploying.
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+// Photos are stored in an S3-compatible bucket (Supabase Storage, Cloudflare R2,
+// AWS S3) when S3_BUCKET is set, and in a local folder otherwise. Either way
+// they're served by the app at /uploads/<key> (src/app/uploads/[key]/route.ts),
+// so stored URLs don't depend on the storage provider.
+
 const MAX_BYTES = 25 * 1024 * 1024;
 const EXTENSIONS: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -12,6 +15,38 @@ const EXTENSIONS: Record<string, string> = {
   "image/webp": "webp",
   "image/gif": "gif",
 };
+const CONTENT_TYPES = Object.fromEntries(Object.entries(EXTENSIONS).map(([type, ext]) => [ext, type]));
+const KEY_PATTERN = /^[0-9a-f-]{36}\.(jpg|png|webp|gif)$/;
+
+const BUCKET = process.env.S3_BUCKET;
+const LOCAL_DIR = path.join(process.cwd(), ".uploads");
+
+let s3Client: S3Client | undefined;
+function s3() {
+  s3Client ??= new S3Client({
+    endpoint: process.env.S3_ENDPOINT,
+    region: process.env.S3_REGION ?? "auto",
+    // Supabase Storage requires path-style URLs; R2 and S3 accept them.
+    forcePathStyle: true,
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID ?? "",
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? "",
+    },
+  });
+  return s3Client;
+}
+
+async function saveFile(key: string, bytes: Uint8Array, contentType: string) {
+  if (BUCKET) {
+    await s3().send(new PutObjectCommand({ Bucket: BUCKET, Key: key, Body: bytes, ContentType: contentType }));
+    return;
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("S3_BUCKET is not set: refusing to store uploads on the container's disk.");
+  }
+  await mkdir(LOCAL_DIR, { recursive: true });
+  await writeFile(path.join(LOCAL_DIR, key), bytes);
+}
 
 export class ImageUploadError extends Error {}
 
@@ -44,8 +79,36 @@ export async function resolveImage(formData: FormData, field: string): Promise<s
   if (!extension) throw new ImageUploadError("Please upload a JPG, PNG, WebP, or GIF image.");
   if (file.size > MAX_BYTES) throw new ImageUploadError("Images must be 25 MB or smaller.");
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  const filename = `${randomUUID()}.${extension}`;
-  await writeFile(path.join(UPLOAD_DIR, filename), Buffer.from(await file.arrayBuffer()));
-  return `/uploads/${filename}`;
+  const key = `${randomUUID()}.${extension}`;
+  try {
+    await saveFile(key, new Uint8Array(await file.arrayBuffer()), file.type);
+  } catch (error) {
+    console.error("Photo upload failed", error);
+    throw new ImageUploadError("We couldn't save that photo. Try again, or paste an image link instead.");
+  }
+  return `/uploads/${key}`;
+}
+
+/** Loads a stored photo by key, or null if the key is invalid or missing. */
+export async function readUpload(key: string): Promise<{ body: BodyInit; contentType: string } | null> {
+  const match = KEY_PATTERN.exec(key);
+  if (!match) return null;
+  const contentType = CONTENT_TYPES[match[1]];
+
+  if (BUCKET) {
+    try {
+      const object = await s3().send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
+      if (!object.Body) return null;
+      return { body: object.Body.transformToWebStream(), contentType };
+    } catch (error) {
+      if (error instanceof NoSuchKey) return null;
+      throw error;
+    }
+  }
+
+  try {
+    return { body: new Uint8Array(await readFile(path.join(LOCAL_DIR, key))), contentType };
+  } catch {
+    return null;
+  }
 }

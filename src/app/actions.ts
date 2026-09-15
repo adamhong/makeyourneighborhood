@@ -3,10 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { CATEGORIES, NEIGHBORHOODS, STARTER_SUPPORT, isNeedId } from "@/lib/constants";
+import { CATEGORIES, NEIGHBORHOODS, isNeedId } from "@/lib/constants";
 import { ImageUploadError, resolveImage } from "@/lib/uploads";
 
-// No auth in v1: every action is public by design. Add ownership and
+// No accounts yet: every action is public. Add ownership and
 // rate-limit checks here once accounts exist.
 
 export type FormState = {
@@ -72,12 +72,9 @@ export async function createProposal(_prev: FormState, formData: FormData): Prom
       address,
       neighborhood,
       category,
-      needs: JSON.stringify(needs),
+      needs,
       existingImageUrl,
       inspirationImageUrl,
-      // Demo polish so a brand-new idea doesn't show zero supporters.
-      supportCount:
-        STARTER_SUPPORT.min + Math.floor(Math.random() * (STARTER_SUPPORT.max - STARTER_SUPPORT.min + 1)),
     },
   });
 

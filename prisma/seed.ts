@@ -1,9 +1,9 @@
 import "dotenv/config";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 
 const prisma = new PrismaClient({
-  adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./prisma/dev.db" }),
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
 
 const unsplash = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1200&q=80`;
@@ -165,9 +165,10 @@ const proposals: SeedProposal[] = [
 ];
 
 async function main() {
-  // `--if-empty` (used on deploy) never touches a database that already has data.
-  if (process.argv.includes("--if-empty") && (await prisma.proposal.count()) > 0) {
-    console.log("Database already has proposals; skipping seed.");
+  // Demo data for local development. Never wipe a database that has data
+  // unless explicitly asked to with --reset.
+  if (!process.argv.includes("--reset") && (await prisma.proposal.count()) > 0) {
+    console.log("Database already has proposals; skipping seed. Use `npm run db:reset` to wipe and re-seed.");
     return;
   }
 
@@ -179,7 +180,7 @@ async function main() {
     await prisma.proposal.create({
       data: {
         ...proposal,
-        needs: JSON.stringify(needs),
+        needs,
         createdAt: daysAgo(age),
         comments: {
           create: comments.map(({ daysAgo: commentAge, ...comment }) => ({ ...comment, createdAt: daysAgo(commentAge) })),

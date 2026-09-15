@@ -3,7 +3,7 @@
 import { PinIcon } from "@/components/icons";
 import { NEIGHBORHOODS } from "@/lib/constants";
 
-// Illustrated stand-in for a live map. Replace with a real map + geocoding later.
+// Illustrated neighborhood picker.
 const LAND = "M3 6 L38 3 L60 5 L73 2 L87 7 L91 21 L87 36 L95 49 L90 67 L3 67 Z";
 
 type MapPlaceholderProps = {
@@ -58,7 +58,7 @@ export function MapPlaceholder({ selected, onSelect }: MapPlaceholderProps) {
       })}
 
       <p className="chip absolute bottom-3 left-3 bg-white/90 text-ink-soft shadow-sm">
-        🗺️ Tap a pin · live map coming soon
+        🗺️ Tap a pin to choose
       </p>
     </div>
   );

@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model Proposal {
@@ -21,9 +21,9 @@ model Proposal {
   longitude           Float?
   existingImageUrl    String?
   inspirationImageUrl String?
-  /// JSON-encoded array of community-need ids (see src/lib/needs.ts)
-  needs               String   @default("[]")
-  /// No accounts in v1: support is a simple counter
+  /// Community-need ids (see NEEDS in src/lib/constants.ts)
+  needs               String[] @default([])
+  /// No accounts yet: support is a simple counter
   supportCount        Int      @default(0)
   createdAt           DateTime @default(now())
 

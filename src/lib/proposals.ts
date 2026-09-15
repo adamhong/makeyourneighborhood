@@ -1,8 +1,8 @@
 import { connection } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// better-sqlite3 is synchronous, so each read waits for a request
-// (connection()) to keep it out of build-time prerendering.
+// Each read waits for a request (connection()) so pages always render from
+// the live database, never at build time.
 
 const withInvestorCount = { _count: { select: { investments: true } } } as const;
 
