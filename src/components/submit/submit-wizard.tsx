@@ -3,10 +3,9 @@
 import { useActionState, useState, useTransition } from "react";
 import { createProposal, type FormState } from "@/app/actions";
 import { ArrowRightIcon } from "@/components/icons";
-import { DictationButton } from "@/components/submit/dictation-button";
 import { ImageField } from "@/components/submit/image-field";
 import { MapPlaceholder } from "@/components/submit/map-placeholder";
-import { CATEGORIES, NEEDS, NEIGHBORHOODS, getNeighborhood, type NeedId } from "@/lib/constants";
+import { CATEGORIES, NEEDS, NEIGHBORHOODS, type NeedId } from "@/lib/constants";
 
 const initialState: FormState = {};
 const STEP_ONE_FIELDS = ["address", "neighborhood"];
@@ -35,12 +34,6 @@ export function SubmitWizard() {
   }
 
   const errors = state.errors ?? {};
-  const hood = getNeighborhood(neighborhood);
-  const needRank = (id: NeedId) => {
-    const index = hood?.topNeeds.indexOf(id) ?? -1;
-    return index === -1 ? NEEDS.length : index;
-  };
-  const suggestedNeeds = [...NEEDS].sort((a, b) => needRank(a.id) - needRank(b.id));
 
   function goToDetails() {
     if (!address.trim() || !neighborhood) {
@@ -180,10 +173,7 @@ export function SubmitWizard() {
           </div>
 
           <div>
-            <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-              <label htmlFor="description" className="field-label mb-0">Describe your idea</label>
-              <DictationButton />
-            </div>
+            <label htmlFor="description" className="field-label">Describe your idea</label>
             <textarea
               id="description"
               name="description"
@@ -214,57 +204,32 @@ export function SubmitWizard() {
           </div>
         </section>
 
-        <section className="card overflow-hidden">
-          <div className="bg-gradient-to-br from-lilac via-paper to-butter p-5 sm:p-8">
-            <p className="chip bg-plum text-white">✨ AI neighborhood insights · preview</p>
-            <h2 className="mt-3 font-display text-2xl font-extrabold tracking-tight">
-              What {hood?.name ?? "this neighborhood"} is asking for
-            </h2>
-            <p className="mt-1 text-sm text-ink-soft">
-              Suggestions based on local signals. Tap every need your idea would help with.
-            </p>
-
-            <div className="mt-5 grid gap-6 md:grid-cols-[1fr_1.5fr]">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-ink-soft">This neighborhood already has</p>
-                <ul className="mt-2 flex flex-wrap gap-2">
-                  {(hood?.alreadyHas ?? ["Pick a neighborhood to see local context"]).map((item) => (
-                    <li key={item} className="chip border border-line bg-white/80 text-ink-soft">✓ {item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-ink-soft">This neighborhood needs</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {suggestedNeeds.map((need) => {
-                    const selected = needs.includes(need.id);
-                    const topPick = hood?.topNeeds[0] === need.id;
-                    return (
-                      <button
-                        key={need.id}
-                        type="button"
-                        onClick={() => toggleNeed(need.id)}
-                        aria-pressed={selected}
-                        className={`chip border-2 px-3.5 py-2 text-sm transition ${
-                          selected ? "border-ink bg-ink text-cream" : "border-line bg-white text-ink hover:border-ink"
-                        }`}
-                      >
-                        {need.emoji} {need.label}
-                        {topPick && (
-                          <span className="ml-1 rounded-full bg-sun px-1.5 py-0.5 text-[10px] font-extrabold uppercase text-ink">
-                            Top pick
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-            {needs.map((need) => (
-              <input key={need} type="hidden" name="needs" value={need} />
-            ))}
+        <section className="card p-5 sm:p-8">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight">
+            What would it bring to {neighborhood || "the neighborhood"}?
+          </h2>
+          <p className="mt-1 text-sm text-ink-soft">Optional — tap every community need your idea would help with.</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {NEEDS.map((need) => {
+              const selected = needs.includes(need.id);
+              return (
+                <button
+                  key={need.id}
+                  type="button"
+                  onClick={() => toggleNeed(need.id)}
+                  aria-pressed={selected}
+                  className={`chip border-2 px-3.5 py-2 text-sm transition ${
+                    selected ? "border-ink bg-ink text-cream" : "border-line bg-white text-ink hover:border-ink"
+                  }`}
+                >
+                  {need.emoji} {need.label}
+                </button>
+              );
+            })}
           </div>
+          {needs.map((need) => (
+            <input key={need} type="hidden" name="needs" value={need} />
+          ))}
         </section>
 
         <section className="card p-5 sm:p-8">

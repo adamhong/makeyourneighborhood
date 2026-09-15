@@ -8,7 +8,7 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    // Same default as src/lib/prisma.ts, so deploys without a .env still work.
-    url: process.env["DATABASE_URL"] ?? "file:./prisma/dev.db",
+    // Migrations prefer a direct (non-pooled) connection when one is provided.
+    url: process.env["DIRECT_URL"] || process.env["DATABASE_URL"],
   },
 });

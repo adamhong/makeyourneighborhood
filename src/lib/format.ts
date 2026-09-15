@@ -1,13 +1,8 @@
 import { getNeed, isNeedId, type NeedId } from "@/lib/constants";
 
-/** Proposal.needs is stored as a JSON string in SQLite. */
-export function parseNeeds(raw: string): NeedId[] {
-  try {
-    const value: unknown = JSON.parse(raw);
-    return Array.isArray(value) ? value.filter(isNeedId) : [];
-  } catch {
-    return [];
-  }
+/** Keeps only need ids that still exist in NEEDS. */
+export function parseNeeds(raw: string[]): NeedId[] {
+  return raw.filter(isNeedId);
 }
 
 /** Short tags shown on proposal cards. */

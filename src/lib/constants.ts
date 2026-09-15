@@ -1,13 +1,10 @@
 /** Supporters needed before a proposal shows the "Community momentum" banner. */
 export const MOMENTUM_THRESHOLD = 50;
 
-/** Demo only: newly submitted proposals start with a few "I want this" votes. */
-export const STARTER_SUPPORT = { min: 3, max: 12 };
-
 export const INVESTMENT_DISCLAIMER =
   "Interest is non-binding and does not constitute an investment offer.";
 
-/** Community needs, shown as mock "AI" suggestions on the submit form. */
+/** Community needs a proposal can say it responds to. */
 export const NEEDS = [
   {
     id: "childcare",
@@ -86,24 +83,17 @@ export type Neighborhood = {
   /** Pin position on the illustrated map, in percent of its width/height. */
   x: number;
   y: number;
-  /** Mock "AI" context shown on the submit form. */
-  alreadyHas: string[];
-  topNeeds: NeedId[];
 };
 
 export const NEIGHBORHOODS: Neighborhood[] = [
-  { name: "SoMa", x: 68, y: 33, alreadyHas: ["Tech offices", "Coffee shops", "Yerba Buena Gardens"], topNeeds: ["childcare", "green", "workspace"] },
-  { name: "Dogpatch", x: 80, y: 50, alreadyHas: ["Breweries", "Maker studios", "Waterfront walks"], topNeeds: ["music", "green", "kitchen"] },
-  { name: "Mission", x: 62, y: 51, alreadyHas: ["Taquerias", "Murals", "Dolores Park"], topNeeds: ["bookstore", "kitchen", "childcare"] },
-  { name: "Tenderloin", x: 61, y: 25, alreadyHas: ["Historic theaters", "Family-run restaurants", "Social services"], topNeeds: ["green", "kitchen", "childcare"] },
-  { name: "Bayview", x: 76, y: 77, alreadyHas: ["Third Street shops", "Community gardens", "Warehouse space"], topNeeds: ["workspace", "bookstore", "childcare"] },
-  { name: "Hayes Valley", x: 54, y: 34, alreadyHas: ["Boutiques", "Patricia's Green", "Restaurants"], topNeeds: ["childcare", "music", "workspace"] },
-  { name: "Chinatown", x: 67, y: 16, alreadyHas: ["Family associations", "Bakeries", "Portsmouth Square"], topNeeds: ["green", "childcare", "kitchen"] },
-  { name: "Excelsior", x: 54, y: 82, alreadyHas: ["Mission St businesses", "McLaren Park", "Churches"], topNeeds: ["bookstore", "music", "workspace"] },
-  { name: "Outer Sunset", x: 14, y: 56, alreadyHas: ["Ocean Beach", "Surf shops", "Golden Gate Park"], topNeeds: ["kitchen", "childcare", "music"] },
-  { name: "Western Addition", x: 47, y: 28, alreadyHas: ["Jazz history", "Fillmore venues", "Alamo Square"], topNeeds: ["workspace", "bookstore", "green"] },
+  { name: "SoMa", x: 68, y: 33 },
+  { name: "Dogpatch", x: 80, y: 50 },
+  { name: "Mission", x: 62, y: 51 },
+  { name: "Tenderloin", x: 61, y: 25 },
+  { name: "Bayview", x: 76, y: 77 },
+  { name: "Hayes Valley", x: 54, y: 34 },
+  { name: "Chinatown", x: 67, y: 16 },
+  { name: "Excelsior", x: 54, y: 82 },
+  { name: "Outer Sunset", x: 14, y: 56 },
+  { name: "Western Addition", x: 47, y: 28 },
 ];
-
-export function getNeighborhood(name: string): Neighborhood | undefined {
-  return NEIGHBORHOODS.find((neighborhood) => neighborhood.name === name);
-}

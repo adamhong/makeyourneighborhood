@@ -1,12 +1,18 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function createPrismaClient() {
-  const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
-  });
+  const adapter = new PrismaPg(
+    {
+      connectionString: process.env.DATABASE_URL,
+      // Fail fast instead of hanging if the database is unreachable
+      // (free-tier databases can take a few seconds to wake up).
+      connectionTimeoutMillis: 15_000,
+    },
+    { onPoolError: (error) => console.error("Postgres pool error", error) },
+  );
   return new PrismaClient({ adapter });
 }
 
